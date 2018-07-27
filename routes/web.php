@@ -14,3 +14,19 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+//-----------Admin-------//
+Route::get('/admin','Admin\AdminController@index');
+Route::get('/admin/passport',function(){
+	return view('admin.passport');
+})->middleware('admin');
+
+// --------- Posts ------//
+
+Route::resource('posts', 'PostController');
+
+//------- Users ----- //
+Route::resource('/admin/users', 'admin\UserController');

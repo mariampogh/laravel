@@ -11,6 +11,7 @@
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
 
         <!-- Styles -->
+       <!--  <link href="/css/vueCss.css" rel="stylesheet" type="text/css"> -->
         <style>
             html, body {
                 background-color: #fff;
@@ -76,7 +77,6 @@
                     @endauth
                 </div>
             @endif
-
             <div class="content">
                 <div class="title m-b-md">
                     Laravel

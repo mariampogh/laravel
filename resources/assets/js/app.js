@@ -17,6 +17,38 @@ window.Vue = require('vue');
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 
+// Vue.component('menu-component', require('./components/Menu.vue'));
+
+// ----------- Passport -----------//
+Vue.component(
+    'passport-clients',
+    require('./components/passport/Clients.vue')
+);
+
+Vue.component(
+    'passport-authorized-clients',
+    require('./components/passport/AuthorizedClients.vue')
+);
+
+Vue.component(
+    'passport-personal-access-tokens',
+    require('./components/passport/PersonalAccessTokens.vue')
+);
+
+//----------- Posts ------------//
+Vue.component(
+    'posts-index',
+    require('./components/posts/IndexComponent.vue')
+);
+
+// ----- Admin ---------//
+Vue.component(
+    'admin-users',
+    require('./components/admin/users/IndexComponent.vue')
+);
+
 const app = new Vue({
     el: '#app'
 });
+
+
