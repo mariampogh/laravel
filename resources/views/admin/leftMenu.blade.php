@@ -18,7 +18,7 @@
       </li>
       <li class="nav-item">
         <i class="fa fa-bar-chart text-light" aria-hidden="true"></i>
-          <a class="nav-link text-light d-inline-block" href="#">Stats</a>
+          <a class="nav-link text-light d-inline-block" href="/chart">Stats</a>
       </li>
     </ul>
   </nav>       

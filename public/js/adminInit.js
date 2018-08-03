@@ -1,9 +1,15 @@
 $(document).ready(function(){
     $(".delete").click(function(){
-    		var id = $(this).attr('data-id');
+    	var id = $(this).attr('data-id');
         $(".confirm").attr("action", "/admin/users/"+id)
-    		 $(".confirm").val("as");
-        console.log(id)
+        	console.log("id")
     	})
 
+
+
 })
+
+
+// $('.delete').on('click', () => {
+// 	alert('alert');
+// });

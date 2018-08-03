@@ -17,12 +17,8 @@
     <link href="https://fonts.googleapis.com/css?family=Raleway:300,400,600" rel="stylesheet" type="text/css">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-   
-  
-  
-    
-    
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">  
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>  
 </head>
 <body>
     <div id="app">
@@ -37,21 +33,17 @@
                     <li class="nav-item active">
                         <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Features</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Pricing</a>
-                    </li>
-                    <li class="nav-item">
-                         <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li>
-                        <form class="form-inline">
-                    <input class="form-control mr-sm-2" type="search" placeholder="Search Post" aria-label="Search">
-                    <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Search</button>
-                </form>
-                    </li>
+                    @if(Auth::user())
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('changeInfoPage') }}">changeInfo</a>
+                        </li>
+                        @if(Auth::user()->cv == 1)
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('user.userCV') }}">ChageCv</a>
+                        </li>
+                        @endif
+                    @endif
+                    
                 </ul>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
@@ -100,7 +92,10 @@
     </div>
     <!-- Scripts -->
 
-    <script src="{{ asset('js/app.js') }}" ></script>
-    <script type="text/javascript" src = "/js/adminInit.js"></script>
+    <!-- <script src="{{ asset('js/app.js') }}" ></script> -->
+    <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ asset('js/adminInit.js') }} "></script>
 </body>
 </html>

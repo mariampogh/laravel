@@ -6,7 +6,7 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">{{ __('Register') }}</div>
-
+                    
                 <div class="card-body">
                     <form method="POST" action="{{ route('register') }}" aria-label="{{ __('Register') }}">
                         @csrf
@@ -68,6 +68,20 @@
                                 </button>
                             </div>
                         </div>
+                        <div >
+                        <div class = "float-left">Register by</div>
+                   
+                        <div class = "float-left ml-3">
+                            <a href="{!! route('socialite.auth', 'facebook') !!}">
+                                <i class="fa fa-facebook" aria-hidden="true" ></i>
+                            </a>
+                        </div>
+                        <div class = "float-left ml-3">
+                            <a href="{!! route('socialite.auth', 'google') !!}">
+                                <i class="fa fa-google-plus" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
                     </form>
                 </div>
             </div>

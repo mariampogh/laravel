@@ -30,10 +30,22 @@
 				    	<tr>
 				      		<td scope="row">{{++$key}}</td>
 				      		<td>
-				      			<a href="/admin/users/{{$user->id}}">{{$user->name}}</a>
+				      			
+				      			@if($user->cv == 1)
+				      				<a href="{{ route('admin.userCv', $user->id) }}">{{$user->name}}</a>
+				      			@else 
+				      				<label>{{$user->name}}</label>
+				      			@endif
 				      		</td>
 							<td>{{$user->email}}</td>
-							<td>***</td>
+							<td >
+								<form action="/admin/users/changePwdAction/{{$user->id}}" method="get">
+									{!! csrf_field() !!}
+									<button  class="btn btn-default"> 
+										<i class="fa fa-key" aria-hidden="true"></i>
+									</button>
+								</form>
+							</td>
 							<td>
 								<form action="{{ route('users.edit', $user->id) }}" method="get">
           		    				{!! csrf_field() !!}
@@ -43,7 +55,7 @@
 								</form> 
 							</td>
 				      		<td>
-				      			<button type="button" class="btn btn-danger delete"  data-toggle="modal" data-target="#delete" data-id= "{{$user->id}}">
+				      			<button type="button" class="btn btn-danger delete"  data-toggle="modal" data-target="#delete" data-id="{{$user->id}}">
 				      				<i class="fa fa-trash-o" aria-hidden="true"></i>
 				      			</button>
 				      		</td>
@@ -52,5 +64,6 @@
 			  	</tbody>
 			</table>
 	    </div>
+
 	</div>
 @endsection

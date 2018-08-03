@@ -5,8 +5,8 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
+                 
                 <div class="card-header">{{ __('Login') }}</div>
-
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}" aria-label="{{ __('Login') }}">
                         @csrf
@@ -38,6 +38,7 @@
                                 @endif
                             </div>
                         </div>
+                       
 
                         <div class="form-group row">
                             <div class="col-md-6 offset-md-4">
@@ -63,6 +64,20 @@
                             </div>
                         </div>
                     </form>
+                    <div >
+                        <div class = "float-left">LogIn by</div>
+                   
+                        <div class = "float-left ml-3">
+                            <a href="{!! route('socialite.auth', 'facebook') !!}">
+                                <i class="fa fa-facebook" aria-hidden="true" ></i>
+                            </a>
+                        </div>
+                        <div class = "float-left ml-3">
+                            <a href="{!! route('socialite.auth', 'google') !!}">
+                                <i class="fa fa-google-plus" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

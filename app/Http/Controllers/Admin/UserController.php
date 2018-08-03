@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Laravel\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Laravel\User;
+use Laravel\UserCv;
 
 class UserController extends Controller
 {
@@ -103,5 +104,65 @@ class UserController extends Controller
     {
         User::destroy($id);
         return redirect('/admin/users');
+    }
+
+    public function changePwdAction($id){
+        return view('admin.changePwd')
+            ->with('id', $id);
+    }
+
+    public function changePwd(Request $request){
+        $validator = $this->validate($request,[  
+            'password' => 'required|string|min:6|confirmed'
+        ]);
+
+        $user = User::find($request->id);
+        $user->password = Hash::make($request->password);
+        $user->save();
+        return redirect('/admin/users');
+    }
+
+    public function userCv($id){
+        // dd($id);
+        if(User::find($id)->cv == 1){
+            $cv = User::find($id)->userCv()->get();
+            $user = User::find($id);
+            return view('admin.userCv')->with(['user' => $user, 'cv' => $cv]);
+        }
+        else{
+            return redirect()->back();
+        }
+    }
+
+    public function editCv(Request $request){
+  
+        $count = (count($request->all()) - 2 )/2;
+        $user_id  = $request->id;
+        $countAnswears = 0;
+        for($i = 0; $i < $count; $i++ ){
+            $question = "question".$i;
+            $answear = "answear".$i;
+            $userCv = UserCv::where([
+                                ['user_id', $user_id],
+                                ['question', $request->$question],
+                                
+                            ]) ->first();
+            if(!is_null($request->$answear)){
+                $userCv->answear = $request->$answear;
+                $userCv->save();
+            }
+            else{
+                $userCv->delete();
+                $countAnswears++;
+            }
+        }
+        if($countAnswears == $count){
+            $user = User::find($user_id);
+            $user->cv = 0;
+            $user->save();
+            return redirect()->route('users.index');
+        }
+
+        return redirect()->route('admin.userCV', $user_id);
     }
 }

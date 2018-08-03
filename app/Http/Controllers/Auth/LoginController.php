@@ -4,7 +4,9 @@ namespace Laravel\Http\Controllers\Auth;
 
 use Laravel\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
-
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Auth;
+use Laravel\User;
 class LoginController extends Controller
 {
     /*
@@ -20,28 +22,40 @@ class LoginController extends Controller
 
     use AuthenticatesUsers;
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    // protected $redirectTo = '/home';
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    // public function __construct()
-    // {
-    //     $this->middleware('guest')->except('logout');
-    // }
-     protected function authenticated($request, $user)
-   {
-       if($user->isAdmin == 1) {
+ 
+    protected function authenticated($request, $user)
+    {
+        if($user->isAdmin == 1) {
            return redirect()->intended('/admin');
-       }
+        }
 
-       return redirect()->intended('/home');
-   }
+        return redirect()->intended('/home');
+    }
+
+
+    public function signInSocial($provider){
+
+        $user = Socialite::driver($provider)->user();
+        // dd($user);
+        $authUser = $this->findOrCreateUser($user, $provider);
+        Auth::login($authUser, true);
+        return redirect('/home');
+
+    }
+
+
+
+     public function findOrCreateUser($user, $provider)
+    {
+        $social = $provider.'_'.$user->user['id'];
+        $authUser = User::where('social', $social)->first();
+        if ($authUser) {
+            return $authUser;
+        }
+        return User::create([
+            'name'     => $social,
+            'social'    => $social,
+            
+        ]);
+    }
 }
