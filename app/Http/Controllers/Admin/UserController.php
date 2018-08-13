@@ -2,37 +2,41 @@
 
 namespace Laravel\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
-use Laravel\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Hash;
-use Laravel\User;
-use Laravel\UserCv;
+use PDF; 
+use Illuminate\Http\Request; 
+use Laravel\Http\Controllers\Controller; 
+use Laravel\Repositories\UserRepository; 
+use Laravel\Repositories\UserCvRepository; 
+use Laravel\Repositories\ProfessionRepository;
+
 
 class UserController extends Controller
 {
-    public function __construct()
-    {
+    private $userRepo;
+    private $userCvRepo;
+    private $professionRepo;
+    
+    public function __construct(UserRepository $userRepo,UserCvRepository $userCvRepo,ProfessionRepository $professionRepo)
+    {   
         $this->middleware('admin');
+        $this->userRepo = $userRepo;
+        $this->userCvRepo = $userCvRepo;
+        $this->professionRepo = $professionRepo;
+       
     }
 
     public function index()
     {
-        $users = User::all();
+        $users = $this->userRepo->getAll();
         $countUsers = $users->count();
         return view('admin.users')->with(['users' => $users, 'countUsers' => $countUsers]); 
     }
     
     public function create()
     {
-         return view('admin.addUser');
+        return view('admin.addUser');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validator = $this->validate($request,[
@@ -40,70 +44,42 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-        return redirect('/admin/users');
+        $user = $this->userRepo->create($request);
+        return redirect()->route('users.index');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        //
+        $checkCv = $this->userRepo->checkCv($id);
+        if($checkCv){
+            $cv = $this->userRepo->getUserCV($id);
+            $user =  $this->userRepo->getById($id);
+            return view('admin.userCv')->with(['user' => $user, 'cv' => $cv->userCv]);
+        }
+        return redirect()->back();
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        $user = User::find($id);
-
-        return view('admin.editUserInfo')
-            ->with('user', $user);
+        $user = $this->userRepo->getById($id);
+        return view('admin.editUserInfo')->with('user', $user);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         $validator = $this->validate($request,[
             'name' => 'required|string|max:255|min:3',
-            'email' => 'required|string|email|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$id,
+            'address' => 'required|string|max:255',
+            'phone' => 'required|numeric',
         ]);
-       
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->save();
-        return redirect('/admin/users');
+        $user = $this->userRepo->editInfo($id, $request);
+        return redirect()->route('users.index');
     }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        User::destroy($id);
-        return redirect('/admin/users');
+        $this->userRepo->delete($id);
+        return redirect()->route('users.index');
     }
 
     public function changePwdAction($id){
@@ -115,54 +91,29 @@ class UserController extends Controller
         $validator = $this->validate($request,[  
             'password' => 'required|string|min:6|confirmed'
         ]);
-
-        $user = User::find($request->id);
-        $user->password = Hash::make($request->password);
-        $user->save();
-        return redirect('/admin/users');
-    }
-
-    public function userCv($id){
-        // dd($id);
-        if(User::find($id)->cv == 1){
-            $cv = User::find($id)->userCv()->get();
-            $user = User::find($id);
-            return view('admin.userCv')->with(['user' => $user, 'cv' => $cv]);
-        }
-        else{
-            return redirect()->back();
-        }
+        $user = $this->userRepo->changePwd($request->id,$request->password);
+        return redirect()->route('users.index')->with('message','Successfull update!');
     }
 
     public function editCv(Request $request){
-  
+        
         $count = (count($request->all()) - 2 )/2;
-        $user_id  = $request->id;
-        $countAnswears = 0;
-        for($i = 0; $i < $count; $i++ ){
-            $question = "question".$i;
-            $answear = "answear".$i;
-            $userCv = UserCv::where([
-                                ['user_id', $user_id],
-                                ['question', $request->$question],
-                                
-                            ]) ->first();
-            if(!is_null($request->$answear)){
-                $userCv->answear = $request->$answear;
-                $userCv->save();
-            }
-            else{
-                $userCv->delete();
-                $countAnswears++;
-            }
-        }
-        if($countAnswears == $count){
-            $user = User::find($user_id);
-            $user->cv = 0;
-            $user->save();
+        $user_id = $request->id;
+        $deletedItems = $this->userCvRepo->editCvAndReturnDeletedItemsCount($user_id, $request, $count);
+        if($deletedItems == $count){
+            $this->userRepo->changeUserCvColumn($user_id, 0);
             return redirect()->route('users.index');
         }
+        return redirect()->back()->with('message','The CV successfully updated!');
+    
+    }
 
-        return redirect()->route('admin.userCV', $user_id);
+    public function exportPdf($id){
+
+
+        $user = $this->userRepo->getById($id);
+        $cv = $this->userRepo->getUserCV($id);
+        $pdf = PDF::loadView('export.userCv', ['cv' => $cv->userCv, 'user' => $user]);
+        return $pdf->stream($user->name.'CV.pdf');
     }
 }

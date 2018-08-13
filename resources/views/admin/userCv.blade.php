@@ -2,7 +2,25 @@
 
 @section('content')
 <div class="container  rounded p-3 mt-3 " style="border:1px solid rgb(23, 162, 184)">
-    <h3 class="border-bottom" style="color:rgb(23, 162, 184);">{{$user->name}} cv</h3>
+@if(session()->has('message'))
+    <div class="alert alert-success">
+        {{ session()->get('message') }}
+    </div>
+@endif
+    <div class="mb-3" style="color:rgb(23, 162, 184);">
+      <h3 class="d-inline"> {{ $user->name }}</h3>
+      <div class="d-inline float-right">
+        <div class="d-inline float-left">
+          <span class="d-block">{{ $user->address }}</span>
+          <span class="d-block">{{ $user->phone }}</span>  
+        </div>
+        <a class="d-inline float-left ml-2" href="{{ route('admin.exportPdf', $user->id) }}">
+          <i class="fa fa-download" style="font-size:150%" aria-hidden="true"></i>
+        </a>
+      </div>
+    </div>
+    <hr>
+   
    	<form action="{{ route('admin.editCv') }}" method="post"> 
    		{!! csrf_field() !!}
       <input type="hidden" name="id" value="{{ $user->id }}">

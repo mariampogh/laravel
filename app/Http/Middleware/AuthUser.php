@@ -16,7 +16,7 @@ class AuthUser
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::user()) {
+        if (Auth::check()) {
             return $next($request);
         }   
         return redirect('/'); 

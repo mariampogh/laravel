@@ -23,6 +23,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        
+        $this->app->bind(
+           'Laravel\Contracts\UserContract',
+           'Laravel\Repositories\UserRepository'
+        );
+        $this->app->bind(
+           'Laravel\Contracts\UserCvContract',
+           'Laravel\Repositories\UserCvRepository'
+        );
+        $this->app->bind(
+           'Laravel\Contracts\ProfessionContract',
+           'Laravel\Repositories\ProfessionRepository'
+        );
     }
 }

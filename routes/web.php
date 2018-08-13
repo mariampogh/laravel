@@ -15,30 +15,30 @@ use Laravel\Socialite\Facades\Socialite;
 Route::get('/', function () {
     return view('welcome');
 });
-
 Auth::routes();
-
+//-----------User-------//
 Route::get('/home', 'User\UserController@index')->name('home');
-Route::get('/user/cvQuestons/{id}', 'User\UserController@cv')->name('blankCv');
-Route::post('/user/createCv', 'User\UserController@createCv')->name('createCv');
-Route::get('/user/changeInfoPage', 'User\UserController@changeInfoPage')->name('changeInfoPage');
-Route::post('/user/changePwd', 'User\UserController@changePwd')->name('changePwd');
-Route::post('/user/editInfo', 'User\UserController@editInfo')->name('editInfo');
-Route::get('/user/userCv', 'User\UserController@userCv')->name('user.userCV');
-Route::post('/user/userCv/edit', 'User\UserController@editCv')->name('user.editCv');
+
+Route::group(['prefix' => '/user','namespace' => "User"],function(){
+
+	Route::get('/cvQuestons/{id}', 'UserController@cv')->name('blankCv');
+	Route::post('/createCv', 'UserController@createCv')->name('createCv');
+	Route::get('/changeInfoPage', 'UserController@changeInfoPage')->name('changeInfoPage');
+	Route::post('/changePwd', 'UserController@changePwd')->name('user.changePwd');
+	Route::post('/editInfo', 'UserController@editInfo')->name('editInfo');
+	Route::get('/userCv', 'UserController@userCv')->name('user.userCV');
+	Route::post('/userCv/edit', 'UserController@editCv')->name('user.editCv');
+	Route::get('/exportPdf', 'UserController@exportPdf')->name('user.exportPdf');
+
+});
+
 //-----------Admin-------//
-Route::get('/admin','Admin\AdminController@index');
-Route::get('/chart','Admin\AdminController@chart');
-Route::get('/admin/passport',function(){
-	return view('admin.passport');
-})->middleware('admin');
-
-
-			//------- 1.Users ----- //
-Route::get('/admin/users/changePwdAction/{id}', 'Admin\UserController@changePwdAction');
-Route::post('/admin/users/changePwd', 'admin\UserController@changePwd');
-Route::get('/admin/userCv/{id}', 'Admin\UserController@userCv')->name('admin.userCV');
+Route::get('/chart','Admin\AdminController@chart')->name('admin.chart');
+Route::get('/admin/users/changePwdAction/{id}', 'Admin\UserController@changePwdAction')
+		->name('admin.changePwd');
+Route::post('/admin/users/changePwd', 'admin\UserController@changePwd')->name('changePwd');
 Route::post('/admin/userCv/edit', 'Admin\UserController@editCv')->name('admin.editCv');
+Route::get('/admin/exportPdf/{id}', 'Admin\UserController@exportPdf')->name('admin.exportPdf');
 Route::resource('/admin/users', 'admin\UserController');
 
 //------- Socials ----- //

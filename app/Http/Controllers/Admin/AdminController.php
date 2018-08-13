@@ -20,12 +20,10 @@ class AdminController extends Controller
     }
 
     public function chart(){
-  
 	    for ($i=0; $i<12; $i++){
 	        $userPerMonth[$i] = User::whereMonth('created_at', date('m',strtotime('-'.$i.' month')))->count();
 	    }
 	    $userPerMonth = array_reverse($userPerMonth);
-	    
 	    return view('admin.chart')->with('userPerMonth', $userPerMonth);
 
     }

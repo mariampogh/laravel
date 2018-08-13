@@ -1,11 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
-	<div class="container-fluid" style="overflow: hidden;">
-	    @include('admin.leftMenu')
-	    @include('admin.delete')
-
+@include('admin.leftMenu')
+@include('admin.delete')
+	<div class="container">
 	    <div class="col-10 float-left">
+		@if(session()->has('message'))
+	      	<div class="alert alert-success" style = "margin-left:3%">
+	          	{{ session()->get('message') }}
+	      	</div>
+	    @endif
 	    	<div style = "margin-left:3%">
 				<h3 class="border-bottom">Users <span class="badge badge-info">{{$countUsers}}</span></h3>
 				<a href="{{ route('users.create') }}">
@@ -32,14 +36,14 @@
 				      		<td>
 				      			
 				      			@if($user->cv == 1)
-				      				<a href="{{ route('admin.userCv', $user->id) }}">{{$user->name}}</a>
+				      				<a href="{{ route('users.show', $user->id) }}">{{$user->name}}</a>
 				      			@else 
 				      				<label>{{$user->name}}</label>
 				      			@endif
 				      		</td>
 							<td>{{$user->email}}</td>
 							<td >
-								<form action="/admin/users/changePwdAction/{{$user->id}}" method="get">
+								<form action="{{ route('admin.changePwd', $user->id) }}" method="get">
 									{!! csrf_field() !!}
 									<button  class="btn btn-default"> 
 										<i class="fa fa-key" aria-hidden="true"></i>

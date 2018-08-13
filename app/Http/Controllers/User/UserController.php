@@ -2,80 +2,62 @@
 
 namespace Laravel\Http\Controllers\User;
 
+use PDF;
+use Auth;
 use Illuminate\Http\Request;
 use Laravel\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Laravel\Profession;
-use Laravel\UserCv;
-use Laravel\User;
+use Laravel\Repositories\UserRepository;
+use Laravel\Repositories\UserCvRepository;
+use Laravel\Repositories\ProfessionRepository;
 
 class UserController extends Controller
 {
-	public function __construct()
-    {
+    private $userRepo;
+    private $userCvRepo;
+    private $professionRepo;
+	
+    public function __construct(UserRepository $userRepo,UserCvRepository $userCvRepo,ProfessionRepository $professionRepo)
+    {   
         $this->middleware('authUser');
+        $this->userRepo = $userRepo;
+        $this->userCvRepo = $userCvRepo;
+        $this->professionRepo = $professionRepo;
+       
     }
 
-      public function index()
+    public function userId(){
+        return Auth::id();
+    }
+
+    public function index()
     {
-    	if(Auth::user()->cv == 1){
-    		$cv = $this->getUserCV();
-    		return view('user.userCv')->with('cv', $cv);
-    	}
-    	else{
-    		$professions = Profession::all();
-        	return view('user.home')->with('professions', $professions);
-    	}
-    	
-    }
-
-    public function getUserCV(){
-
-    	$user_id  = Auth::user()->id;
-    	return User::find($user_id)->userCv()->get();
+        $redirectInfo = $this->userRepo->index($this->userId());
+        if ($redirectInfo['type'] == 'cv') {
+            return view('user.userCv')->with('cv', $redirectInfo['data']->userCv);
+        }
+        return view('user.home')->with('professions', $redirectInfo['data']);
     }
 
     public function cv($id){
-    	if(Auth::user()->cv == 1){
-    		$cv = $this->getUserCV();
-    		return view('user.userCv')->with('cv', $cv);
+        $checkCv = $this->userRepo->checkCv($this->userId());
+    	if($checkCv){
+    		$cv = $this->userRepo->getUserCV($this->userId());
+    		return view('user.userCv')->with('cv', $cv->userCv);
     	}
-    
-		$questions = Profession::find($id)->questions()->get();
-		return view('user.blankCv')->with('questions', $questions);
+		$questions = $this->professionRepo->getById($id);
+		return view('user.blankCv')->with(['questions' =>  $questions->questions, 'prof_id' => $id]);
     }
 
     public function createCv(Request $request){
-    	$count = (count($request->all()) -1 )/2;
-    	$user_id  = Auth::user()->id;
-    	$countAnswears = 0;
-    	for($i = 0; $i < $count; $i++ ){
-    		$question = "question".$i;
-    		$answear = "answear".$i;
-    		
-    		if(!is_null($request->$answear)){
-    			$userCv = new UserCv;
-    			$userCv->user_id = $user_id;
-    			$userCv->question = $request->$question;
-    			$userCv->answear = $request->$answear;
-    			$userCv->save();
-    			$countAnswears++;
-    		}
-    	}
-    	if($countAnswears != 0){
-    		$user = User::find($user_id);
-	    	$user->cv = 1;
-	    	$user->save();
-    	}
-		
-    	return redirect()->route('home');
+        $countAnswears = $this->userCvRepo->createCvReturnCountAnswears($this->userId(),$request->all());
+        if($countAnswears != 0){
+            $this->userRepo->changeUserCvColumn($this->userId(), 1);
+        }
+        return redirect()->route('home');
     }
 
     public function changeInfoPage(){
-        $id = Auth::user()->id;
-        $info = User::find($id);
-
+        $info = $this->userRepo->getById($this->userId());
         return view('user.changeInfo')->with('info' , $info);
     }
 
@@ -83,64 +65,45 @@ class UserController extends Controller
         $validator = $this->validate($request,[  
             'password' => 'required|string|min:6|confirmed'
         ]);
-
-        $user = User::find(Auth::user()->id);
-        $user->password = Hash::make($request->password);
-        $user->save();
-        return redirect()->route('home');
+        $user = $this->userRepo->changePwd($this->userId(), $request->password);
+        return redirect()->back()->with('message','Successfull update!');
     }
 
     public function editInfo(Request $request){
         $validator = $this->validate($request,[
             'name' => 'required|string|max:255|min:3',
-            'email' => 'required|string|email|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|numeric',
+            'email' => 'required|string|email|max:255|unique:users,email,'.$this->userId()
         ]);
-       
-        $user = User::find(Auth::user()->id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->save();
-        return redirect()->route('changeInfoPage');
+        $user = $this->userRepo->editInfo($this->userId(), $request);
+        return redirect()->back()->with('message','Successfull update!');
     }
 
     public function userCv(){
-        if(Auth::user()->cv == 1){
-            $cv = $this->getUserCV();
-            return view('user.editUserCv')->with('cv', $cv);
+        $checkCv = $this->userRepo->checkCv($this->userId());
+        if($checkCv){
+            $cv = $this->userRepo->getUserCV($this->userId());
+            return view('user.editUserCv')->with('cv', $cv->userCv);
         }
         return redirect()->back();
                 
     }
     public function editCv(Request $request){
-  
         $count = (count($request->all()) - 1 )/2;
-        $user_id  = Auth::user()->id;
-        $countAnswears = 0;
-        for($i = 0; $i < $count; $i++ ){
-            $question = "question".$i;
-            $answear = "answear".$i;
-            $userCv = UserCv::where([
-                                ['user_id', $user_id],
-                                ['question', $request->$question],
-                                
-                            ]) ->first();
-            if(!is_null($request->$answear)){
-                $userCv->answear = $request->$answear;
-                $userCv->save();
-            }
-            else{
-                $userCv->delete();
-                $countAnswears++;
-            }
-        }
-        if($countAnswears == $count){
-            $user = User::find($user_id);
-            $user->cv = 0;
-            $user->save();
+        $deletedItems = $this->userCvRepo->editCvAndReturnDeletedItemsCount($this->userId(), $request, $count);
+        if($deletedItems == $count){
+            $this->userRepo->changeUserCvColumn($this->userId(), 0);
             return redirect()->route('home');
         }
+        return redirect()->route('user.userCV')->with('message','Successfull update!');
+    }
 
-        return redirect()->route('user.userCV');
+    public function exportPdf(){
+        $user = $this->userRepo->getById($this->userId());
+        $cv = $this->userRepo->getUserCV($this->userId());
+        $pdf = PDF::loadView('export.userCv', ['cv' => $cv->userCv, 'user' => $user]);
+        return $pdf->stream($user->name.'CV.pdf');
     }
 
 }

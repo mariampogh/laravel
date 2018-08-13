@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('ChangePassword') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="/admin/users/changePwd" aria-label="{{ __('Register') }}">
+                    <form method="POST" action="{{ route('changePwd') }}" aria-label="{{ __('Register') }}">
                         @csrf
                         <input type="hidden" name="id" value={{$id}} >
                         <div class="form-group row">
