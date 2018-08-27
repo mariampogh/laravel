@@ -19,10 +19,12 @@ class LoginController extends Controller
     | to conveniently provide its functionality to your applications.
     |
     */
+   
 
     use AuthenticatesUsers;
 
- 
+
+
     protected function authenticated($request, $user)
     {
         if($user->isAdmin == 1) {
@@ -33,7 +35,8 @@ class LoginController extends Controller
     }
 
 
-    public function signInSocial($provider){
+    public function signInSocial($provider)
+    {
 
         $user = Socialite::driver($provider)->user();
         // dd($user);
@@ -45,7 +48,7 @@ class LoginController extends Controller
 
 
 
-     public function findOrCreateUser($user, $provider)
+    public function findOrCreateUser($user, $provider)
     {
         $social = $provider.'_'.$user->user['id'];
         $authUser = User::where('social', $social)->first();

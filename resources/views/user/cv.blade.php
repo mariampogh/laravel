@@ -2,7 +2,6 @@
 
 @section('content')
 <div class="container">
-    
     <div id = "app">
        <div class="dropdown">
 			<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
@@ -19,8 +18,6 @@
 			    	@endforeach
 			    </ul>
 			</div>
-			
-		  
 		</div>
     </div>
 

@@ -31,6 +31,7 @@ class UserController extends Controller
 
     public function index()
     {
+
         $redirectInfo = $this->userRepo->index($this->userId());
         if ($redirectInfo['type'] == 'cv') {
             return view('user.userCv')->with('cv', $redirectInfo['data']->userCv);

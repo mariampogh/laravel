@@ -21,7 +21,7 @@
     <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>  
 </head>
 <body>
-    <div id="app">
+    <div id="app">  
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <a class="navbar-brand" href="/">CreateCv</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,8 +97,11 @@
     </div>
     <!-- Scripts -->
 
-    <!-- <script src="{{ asset('js/app.js') }}" ></script> -->
-    <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script>
+    <script src="{{ asset('js/app.js') }}" ></script>
+    <!-- <script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js'></script> -->
+    <!-- <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script> -->
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="{{ asset('js/adminInit.js') }} "></script>

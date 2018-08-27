@@ -14286,7 +14286,7 @@ module.exports = Cancel;
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(15);
-module.exports = __webpack_require__(67);
+module.exports = __webpack_require__(65);
 
 
 /***/ }),
@@ -14325,7 +14325,7 @@ Vue.component('passport-personal-access-tokens', __webpack_require__(56));
 Vue.component('posts-index', __webpack_require__(61));
 
 // ----- Admin ---------//
-Vue.component('admin-users', __webpack_require__(77));
+Vue.component('admin-users', __webpack_require__(64));
 
 var app = new Vue({
     el: '#app'
@@ -50536,25 +50536,7 @@ if (false) {
 }
 
 /***/ }),
-/* 64 */,
-/* 65 */,
-/* 66 */,
-/* 67 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 68 */,
-/* 69 */,
-/* 70 */,
-/* 71 */,
-/* 72 */,
-/* 73 */,
-/* 74 */,
-/* 75 */,
-/* 76 */,
-/* 77 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var normalizeComponent = __webpack_require__(1)
@@ -50582,6 +50564,12 @@ Component.options.__file = "resources\\assets\\js\\components\\admin\\users\\Ind
 
 module.exports = Component.exports
 
+
+/***/ }),
+/* 65 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

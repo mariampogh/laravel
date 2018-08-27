@@ -14,6 +14,9 @@ use Laravel\Socialite\Facades\Socialite;
 
 Route::get('/', function () {
     return view('welcome');
+})->name('welcome');
+Route::get('/developer', function () {
+    return view('passport');
 });
 Auth::routes();
 //-----------User-------//
@@ -54,4 +57,3 @@ Route::get(
 );
 
 Route::get('socialite/{provider}/callback','Auth\LoginController@signInSocial');
-
